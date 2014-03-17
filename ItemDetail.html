@@ -10,6 +10,7 @@
 <script src="http://code.highcharts.com/stock/highstock.js"></script>
 <script src="http://code.highcharts.com/stock/highcharts-more.js"></script>
 <!--<script src="http://code.highcharts.com/modules/exporting.js"></script>-->
+<script src="itemList.js"></script>
 <script type="text/javascript">
 
 
@@ -161,25 +162,6 @@ function drawchart(){
 /*-----------------*/
 }
 
-function getitemID(){
-    itemname=$("#itemname").val();
-    cresturl="http://neonice.net/EveStuff/itemid.php?itemname="+itemname;
-	console.log(cresturl)
-    //$.getJSON(cresturl,function(data){console.log(1)})
-    $.ajax({
-        type: 'POST',
-        url: cresturl,
-        dataType: 'json',
-        success: function(data) {
-			itemid = data['typeID']
-            console.log(data);
-        },
-        error: function( jqxhr, textStatus, error ) {
-			var err = textStatus + ", " + error;
-			console.log( "Request Failed: " + err );
-		}
-    });
-}
 
 
 function parsedata(data){
@@ -236,9 +218,17 @@ function parsedata(data){
 <input type=text width=30 id="itemname" name='itemname' />
 <script>
 $(document).ready(function() {
-    $("input#itemname").autocomplete({ source: source });
+    $("input#itemname").autocomplete({ 
+		source: itemList,
+		select: function( event, ui ) {
+			itemid = ui.item.key;
+			$( "#itemname" ).val( ui.item.value );
+ 			return false;
+		},
+		minLength: 3
+		});
     });
 </script>
-<button id="rebuild" onclick="getitemID();drawchart();">Redraw Charts</button>
+<button id="rebuild" onclick="drawchart();">Redraw Charts</button>
 </body>
 </html>
