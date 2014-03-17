@@ -1,0 +1,244 @@
+
+<html>
+<head>
+<title>Market Display</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script src="http://code.highcharts.com/stock/highcharts-more.js"></script>
+<!--<script src="http://code.highcharts.com/modules/exporting.js"></script>-->
+<script type="text/javascript">
+
+
+//url="https://public-crest.eveonline.com/market/10000002/types/34/history/";
+//10000042 Metropolis
+//10000002 The Forge
+//url="https://public-crest.eveonline.com/market/10000002/types/29668/history/"; 
+//url2="https://public-crest.eveonline.com/market/10000042/types/29668/history/";
+
+var plots = [];
+//var regions = [10000002,10000043];
+var regions = [];
+var itemid = 29668;
+var seriesOptions = [];
+var name;
+
+var regionname={10000001:'Derelik',10000002:'The Forge',10000003:'Vale of the Silent',10000004:'UUA-F4',10000005:'Detorid',10000006:'Wicked Creek',10000007:'Cache',10000008:'Scalding Pass',10000009:'Insmother',10000010:'Tribute',10000011:'Great Wildlands',10000012:'Curse',10000013:'Malpais',10000014:'Catch',10000015:'Venal',10000016:'Lonetrek',10000017:'J7HZ-F',10000018:'The Spire',10000019:'A821-A',10000020:'Tash-Murkon',10000021:'Outer Passage',10000022:'Stain',10000023:'Pure Blind',10000025:'Immensea',10000027:'Etherium Reach',10000028:'Molden Heath',10000029:'Geminate',10000030:'Heimatar',10000031:'Impass',10000032:'Sinq Laison',10000033:'The Citadel',10000034:'The Kalevala Expanse',10000035:'Deklein',10000036:'Devoid',10000037:'Everyshore',10000038:'The Bleak Lands',10000039:'Esoteria',10000040:'Oasa',10000041:'Syndicate',10000042:'Metropolis',10000043:'Domain',10000044:'Solitude',10000045:'Tenal',10000046:'Fade',10000047:'Providence',10000048:'Placid',10000049:'Khanid',10000050:'Querious',10000051:'Cloud Ring',10000052:'Kador',10000053:'Cobalt Edge',10000054:'Aridia',10000055:'Branch',10000056:'Feythabolis',10000057:'Outer Ring',10000058:'Fountain',10000059:'Paragon Soul',10000060:'Delve',10000061:'Tenerifis',10000062:'Omist',10000063:'Period Basis',10000064:'Essence',10000065:'Kor-Azor',10000066:'Perrigen Falls',10000067:'Genesis',10000068:'Verge Vendor',10000069:'Black Rise'};
+
+function loaddata(region, type){
+	url="https://public-crest.eveonline.com/market/" + region + "/types/" + type + "/history/"; 
+    $.getJSON(url,function(data) {parsedata(data)});
+}
+
+
+$(function() {
+	$.ajaxSetup({
+        async: false
+    });
+	drawchart();
+	
+});
+
+function drawchart(){
+	seriesOptions = [];
+	regions[0] = $("#region1").val();
+	plots = [];
+	loaddata(regions[0],itemid);
+
+	console.log(itemid);
+
+	
+	seriesOptions[0] = {
+		type: 'columnrange',
+		name: 'High/Low',
+		data: plots[0],
+		//pointWidth: 2
+	};
+	seriesOptions[1] = {
+		type: 'line',
+		name: 'Average',
+		data: plots[1],
+		marker : {
+					enabled : true,
+					radius : 1
+				}
+	};
+	seriesOptions[2] = {
+		type: 'column',
+		name: 'Volume',
+		data: plots[2],
+		yAxis: 1
+	};
+	seriesOptions[3] = {
+		type: 'column',
+		name: 'Orders',
+		data: plots[3],
+		animation: false,
+		yAxis: 2
+	};
+	seriesOptions[4] = {
+		type: 'spline',
+		name: '7DayAverage',
+		data: plots[4],
+	};
+	seriesOptions[5] = {
+		type: 'spline',
+		name: '30DayAverage',
+		data: plots[5],
+	};
+	
+		
+/*---------------------------*/
+	//$('#container').highcharts('StockChart', {
+	chart = new Highcharts.StockChart({
+		chart: { 
+			renderTo: 'container'
+		},
+		plotOptions: {
+			series: {
+				connectNulls:false
+			}
+		},
+		rangeSelector: {
+			inputEnabled: $('#container').width() > 480,
+			selected: 1
+		},
+		title: {
+			text: 'Price Avg Daily'
+		},
+		tooltip: {
+			},
+		yAxis: [{
+		        title: {
+		            text: 'Price'
+		        },
+		        height: 250,
+		        lineWidth: 2,
+				minorTickInterval: "auto",
+				tickPixelInterval: 50
+				
+				
+		    }, {
+		        title: {
+		            text: 'Volume'
+		        },
+		        top: 320,
+		        height: 80,
+		        offset: 0,
+		        lineWidth: 2,
+				minorTickInterval: "auto",
+				tickPixelInterval: 50
+		    },{
+		        title: {
+		            text: 'Orders'
+		        },
+		        top: 320,
+		        height: 80,
+		        offset: 0,
+		        lineWidth: 2,
+				 opposite: true,
+				minorTickInterval: "auto",
+				tickPixelInterval: 50			
+			},
+			{
+		        title: {
+		            text: 'Price'
+		        },
+		        height: 250,
+		        lineWidth: 2,
+				opposite: true,
+				offset: 0,
+				minorTickInterval: "auto",
+				tickPixelInterval: 50
+		    }],
+		
+		series: seriesOptions
+
+	});
+/*-----------------*/
+}
+
+function getitemID(){
+    itemname=$("#itemname").val();
+    cresturl="http://neonice.net/EveStuff/itemid.php?itemname="+itemname;
+	console.log(cresturl)
+    //$.getJSON(cresturl,function(data){console.log(1)})
+    $.ajax({
+        type: 'POST',
+        url: cresturl,
+        dataType: 'json',
+        success: function(data) {
+			itemid = data['typeID']
+            console.log(data);
+        },
+        error: function( jqxhr, textStatus, error ) {
+			var err = textStatus + ", " + error;
+			console.log( "Request Failed: " + err );
+		}
+    });
+}
+
+
+function parsedata(data){
+	var highlow = [];
+	var avgplot = [];
+	var volplot = [];
+	var orderplot = [];
+	var running7AvgPlot = [];
+	var	running30AvgPlot = [];
+	var rownum = 0;
+
+    for (var row in data['items'])
+    {
+        rowData=data['items'][row];
+		highlow[rownum] = [Date.parse(rowData['date']),rowData['lowPrice'],rowData['highPrice']];
+		avgplot[rownum] = [Date.parse(rowData['date']),rowData['avgPrice']];
+		if(rownum >= 7){
+			var running7 = 0
+			for(var i=0;i<7;i++){
+				running7 = running7 + avgplot[rownum - i][1]
+			}
+			running7AvgPlot[rownum-7] = [Date.parse(rowData['date']),running7/7];
+		}
+		//console.log(rownum);
+		if(rownum >= 30){
+			var running30 = 0
+			for(var i=0;i<30;i++){
+				running30 = running30 + avgplot[rownum - i][1]
+			}
+			running30AvgPlot[rownum-30] = [Date.parse(rowData['date']),running30/30];
+		}
+
+		volplot[rownum] = [Date.parse(rowData['date']),rowData['volume']];
+		orderplot[rownum] = [Date.parse(rowData['date']),rowData['orderCount']];
+		rownum++;
+    }
+	plots.push(highlow);
+	plots.push(avgplot);
+	plots.push(volplot);
+	plots.push(orderplot);
+	plots.push(running7AvgPlot);
+	plots.push(running30AvgPlot);
+
+}
+
+</script>
+<script src="https://www.fuzzwork.co.uk/market/items.js"></script>
+</head>
+<body>
+<div id="container" style="min-width: 310px; height: 500px; margin: 0 auto"></div>
+<select name=region1 id=region1>
+<option value=10000054>Aridia</option><option value=10000069>Black Rise</option><option value=10000055>Branch</option><option value=10000007>Cache</option><option value=10000014>Catch</option><option value=10000051>Cloud Ring</option><option value=10000053>Cobalt Edge</option><option value=10000012>Curse</option><option value=10000035>Deklein</option><option value=10000060>Delve</option><option value=10000001>Derelik</option><option value=10000005>Detorid</option><option value=10000036>Devoid</option><option value=10000043>Domain</option><option value=10000039>Esoteria</option><option value=10000064>Essence</option><option value=10000027>Etherium Reach</option><option value=10000037>Everyshore</option><option value=10000046>Fade</option><option value=10000056>Feythabolis</option><option value=10000058>Fountain</option><option value=10000029>Geminate</option><option value=10000067>Genesis</option><option value=10000011>Great Wildlands</option><option value=10000030>Heimatar</option><option value=10000025>Immensea</option><option value=10000031>Impass</option><option value=10000009>Insmother</option><option value=10000052>Kador</option><option value=10000049>Khanid</option><option value=10000016>Lonetrek</option><option value=10000013>Malpais</option><option value=10000042>Metropolis</option><option value=10000028>Molden Heath</option><option value=10000040>Oasa</option><option value=10000062>Omist</option><option value=10000021>Outer Passage</option><option value=10000057>Outer Ring</option><option value=10000059>Paragon Soul</option><option value=10000063>Period Basis</option><option value=10000066>Perrigen Falls</option><option value=10000048>Placid</option><option value=10000047>Providence</option><option value=10000023>Pure Blind</option><option value=10000050>Querious</option><option value=10000008>Scalding Pass</option><option value=10000032>Sinq Laison</option><option value=10000044>Solitude</option><option value=10000022>Stain</option><option value=10000041>Syndicate</option><option value=10000045>Tenal</option><option value=10000061>Tenerifis</option><option value=10000038>The Bleak Lands</option><option value=10000033>The Citadel</option><option value=10000002 selected>The Forge</option><option value=10000034>The Kalevala Expanse</option><option value=10000018>The Spire</option><option value=10000010>Tribute</option><option value=10000003>Vale of the Silent</option><option value=10000015>Venal</option><option value=10000068>Verge Vendor</option><option value=10000006>Wicked Creek</option>
+</select>
+<input type=text width=30 id="itemname" name='itemname' />
+<script>
+$(document).ready(function() {
+    $("input#itemname").autocomplete({ source: source });
+    });
+</script>
+<button id="rebuild" onclick="getitemID();drawchart();">Redraw Charts</button>
+</body>
+</html>
