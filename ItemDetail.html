@@ -31,25 +31,24 @@ var regionname={10000001:'Derelik',10000002:'The Forge',10000003:'Vale of the Si
 
 function loaddata(region, type){
 	url="https://public-crest.eveonline.com/market/" + region + "/types/" + type + "/history/"; 
-    $.getJSON(url,function(data) {parsedata(data)});
+    $.getJSON(url,function(data) {parsedata(data); console.log(plots)});
 }
 
 
 $(function() {
-	$.ajaxSetup({
-        async: false
-    });
-	drawchart();
-	
+	update();
+
 });
+
+function update(){
+	regions[0] = $("#region1").val();
+	loaddata(regions[0],itemid);
+}
 
 function drawchart(){
 	seriesOptions = [];
-	regions[0] = $("#region1").val();
-	plots = [];
-	loaddata(regions[0],itemid);
-
-	console.log(itemid);
+	//plots = [];
+	console.log(plots);
 
 	
 	seriesOptions[0] = {
@@ -62,11 +61,8 @@ function drawchart(){
 		type: 'line',
 		name: 'Average',
 		data: plots[1],
-		marker : {
-					enabled : true,
-					radius : 1
-				}
 	};
+	
 	seriesOptions[2] = {
 		type: 'column',
 		name: 'Volume',
@@ -165,6 +161,7 @@ function drawchart(){
 
 
 function parsedata(data){
+	plots = [];
 	var highlow = [];
 	var avgplot = [];
 	var volplot = [];
@@ -204,7 +201,7 @@ function parsedata(data){
 	plots.push(orderplot);
 	plots.push(running7AvgPlot);
 	plots.push(running30AvgPlot);
-
+	drawchart();
 }
 
 </script>
@@ -228,6 +225,6 @@ $(document).ready(function() {
 		});
     });
 </script>
-<button id="rebuild" onclick="drawchart();">Redraw Charts</button>
+<button id="rebuild" onclick="update();">Redraw Charts</button>
 </body>
 </html>
