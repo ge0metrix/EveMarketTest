@@ -22,6 +22,7 @@
 var plots = [];
 //var regions = [10000002,10000043];
 var regions = [];
+var regioncntr = 0;
 var itemid = 29668;
 var seriesOptions = [];
 var name;
@@ -30,26 +31,24 @@ var regionname={10000001:'Derelik',10000002:'The Forge',10000003:'Vale of the Si
 
 function loaddata(region, type){
 	url="https://public-crest.eveonline.com/market/" + region + "/types/" + type + "/history/"; 
+	console.log(url);
     $.getJSON(url,function(data) {parsedata(data)});
 }
 
 
 $(function() {
-	$.ajaxSetup({
-        async: false
-    });
-	drawchart();
-	
+	update();
 });
 
-function drawchart(){
+function update() {
+	regioncntr = 0;
 	regions[0] = $("#region1").val();
 	regions[1] = $("#region2").val();
+	loaddata(regions[regioncntr],itemid);
+}
+
+function drawchart(){
 	seriesOptions = [];
-	for (var region in regions){
-		loaddata(regions[region],itemid);
-		console.log(plots);
-	}
 
 	for (var region in regions){
 		
@@ -108,6 +107,13 @@ function parsedata(data){
 		rownum++;
     }
 	plots.push(avgplot);
+	regioncntr++;
+
+	if(regioncntr < regions.length) { //more data to be loaded!
+		loaddata(regions[regioncntr],itemid);
+	}else{ //done loading data, draw the chart
+		drawchart();
+	}
 }
 
 </script>
@@ -136,6 +142,6 @@ $(document).ready(function() {
 		});
     });
 </script>
-<button id="rebuild" onclick="drawchart();">Redraw Charts</button>
+<button id="rebuild" onclick="update();">Redraw Charts</button>
 </body>
 </html>
