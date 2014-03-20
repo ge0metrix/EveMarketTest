@@ -1,7 +1,31 @@
-
 <html>
 <head>
 <title>Market Display</title>
+
+<style>
+#wrapper {
+    width:100%;
+    display:table;
+    border-spacing:4px;
+	vertical-align: top;
+}
+#controls {
+	vertical-align: top;
+    width:150px;
+    display:table-cell;
+}
+#display {
+    width:100%;
+    display:table-cell;
+	vertical-align: top;
+}
+#region1{
+	height:95%;
+}
+#itemname{
+	width:100%;
+}
+</style>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
@@ -9,18 +33,12 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script src="http://code.highcharts.com/stock/highstock.js"></script>
 <script src="http://code.highcharts.com/stock/highcharts-more.js"></script>
+<script src="js/jquery.placeholder.js"></script>
+<script src="itemList.js"></script>
 <!--<script src="http://code.highcharts.com/modules/exporting.js"></script>-->
 <script type="text/javascript">
 
-
-//url="https://public-crest.eveonline.com/market/10000002/types/34/history/";
-//10000042 Metropolis
-//10000002 The Forge
-//url="https://public-crest.eveonline.com/market/10000002/types/29668/history/"; 
-//url2="https://public-crest.eveonline.com/market/10000042/types/29668/history/";
-
 var plots = [];
-//var regions = [10000002,10000043];
 var regions = [];
 var regioncntr = 0;
 var itemid = 29668;
@@ -37,13 +55,22 @@ function loaddata(region, type){
 
 
 $(function() {
+	$("input#itemname").autocomplete({ 
+		source: itemList,
+		select: function( event, ui ) {
+			itemid = ui.item.key;
+			$( "#itemname" ).val( ui.item.value );
+			return false;
+		},
+		minLength: 3
+		});
+	 $("input#itemname").placeholder("Item Name");
 	update();
 });
 
 function update() {
 	regioncntr = 0;
-	regions[0] = $("#region1").val();
-	regions[1] = $("#region2").val();
+	regions = $("#region1").val();
 	loaddata(regions[regioncntr],itemid);
 }
 
@@ -61,7 +88,7 @@ function drawchart(){
 	console.log(seriesOptions);
 	
 /*---------------------------*/
-	//$('#container').highcharts('StockChart', {
+
 	chart = new Highcharts.StockChart({
 		chart: { 
 			renderTo: 'container',
@@ -109,7 +136,7 @@ function parsedata(data){
 	plots.push(avgplot);
 	regioncntr++;
 
-	if(regioncntr < regions.length) { //more data to be loaded!
+	if(regioncntr < regions.length && regioncntr < 5) { //more data to be loaded!
 		loaddata(regions[regioncntr],itemid);
 	}else{ //done loading data, draw the chart
 		drawchart();
@@ -117,31 +144,22 @@ function parsedata(data){
 }
 
 </script>
-    
+
 </head>
 <body>
-<div id="container" style="min-width: 310px; height: 500px; margin: 0 auto"></div>
-<select name=region1 id=region1>
-<option value=10000054>Aridia</option><option value=10000069>Black Rise</option><option value=10000055>Branch</option><option value=10000007>Cache</option><option value=10000014>Catch</option><option value=10000051>Cloud Ring</option><option value=10000053>Cobalt Edge</option><option value=10000012>Curse</option><option value=10000035>Deklein</option><option value=10000060>Delve</option><option value=10000001>Derelik</option><option value=10000005>Detorid</option><option value=10000036>Devoid</option><option value=10000043>Domain</option><option value=10000039>Esoteria</option><option value=10000064>Essence</option><option value=10000027>Etherium Reach</option><option value=10000037>Everyshore</option><option value=10000046>Fade</option><option value=10000056>Feythabolis</option><option value=10000058>Fountain</option><option value=10000029>Geminate</option><option value=10000067>Genesis</option><option value=10000011>Great Wildlands</option><option value=10000030>Heimatar</option><option value=10000025>Immensea</option><option value=10000031>Impass</option><option value=10000009>Insmother</option><option value=10000052>Kador</option><option value=10000049>Khanid</option><option value=10000016>Lonetrek</option><option value=10000013>Malpais</option><option value=10000042>Metropolis</option><option value=10000028>Molden Heath</option><option value=10000040>Oasa</option><option value=10000062>Omist</option><option value=10000021>Outer Passage</option><option value=10000057>Outer Ring</option><option value=10000059>Paragon Soul</option><option value=10000063>Period Basis</option><option value=10000066>Perrigen Falls</option><option value=10000048>Placid</option><option value=10000047>Providence</option><option value=10000023>Pure Blind</option><option value=10000050>Querious</option><option value=10000008>Scalding Pass</option><option value=10000032>Sinq Laison</option><option value=10000044>Solitude</option><option value=10000022>Stain</option><option value=10000041>Syndicate</option><option value=10000045>Tenal</option><option value=10000061>Tenerifis</option><option value=10000038>The Bleak Lands</option><option value=10000033>The Citadel</option><option value=10000002 selected>The Forge</option><option value=10000034>The Kalevala Expanse</option><option value=10000018>The Spire</option><option value=10000010>Tribute</option><option value=10000003>Vale of the Silent</option><option value=10000015>Venal</option><option value=10000068>Verge Vendor</option><option value=10000006>Wicked Creek</option>
-</select>
-<select name=region2 id=region2>
-<option value=10000054>Aridia</option><option value=10000069>Black Rise</option><option value=10000055>Branch</option><option value=10000007>Cache</option><option value=10000014>Catch</option><option value=10000051>Cloud Ring</option><option value=10000053>Cobalt Edge</option><option value=10000012>Curse</option><option value=10000035>Deklein</option><option value=10000060>Delve</option><option value=10000001>Derelik</option><option value=10000005>Detorid</option><option value=10000036>Devoid</option><option value=10000043 selected>Domain</option><option value=10000039>Esoteria</option><option value=10000064>Essence</option><option value=10000027>Etherium Reach</option><option value=10000037>Everyshore</option><option value=10000046>Fade</option><option value=10000056>Feythabolis</option><option value=10000058>Fountain</option><option value=10000029>Geminate</option><option value=10000067>Genesis</option><option value=10000011>Great Wildlands</option><option value=10000030>Heimatar</option><option value=10000025>Immensea</option><option value=10000031>Impass</option><option value=10000009>Insmother</option><option value=10000052>Kador</option><option value=10000049>Khanid</option><option value=10000016>Lonetrek</option><option value=10000013>Malpais</option><option value=10000042>Metropolis</option><option value=10000028>Molden Heath</option><option value=10000040>Oasa</option><option value=10000062>Omist</option><option value=10000021>Outer Passage</option><option value=10000057>Outer Ring</option><option value=10000059>Paragon Soul</option><option value=10000063>Period Basis</option><option value=10000066>Perrigen Falls</option><option value=10000048>Placid</option><option value=10000047>Providence</option><option value=10000023>Pure Blind</option><option value=10000050>Querious</option><option value=10000008>Scalding Pass</option><option value=10000032>Sinq Laison</option><option value=10000044>Solitude</option><option value=10000022>Stain</option><option value=10000041>Syndicate</option><option value=10000045>Tenal</option><option value=10000061>Tenerifis</option><option value=10000038>The Bleak Lands</option><option value=10000033>The Citadel</option><option value=10000002>The Forge</option><option value=10000034>The Kalevala Expanse</option><option value=10000018>The Spire</option><option value=10000010>Tribute</option><option value=10000003>Vale of the Silent</option><option value=10000015>Venal</option><option value=10000068>Verge Vendor</option><option value=10000006>Wicked Creek</option>
-</select>
-<script src="itemList.js"></script>
-<input type=text width=30 id="itemname" name='itemname' />
-<script>
-$(document).ready(function() {
-    $("input#itemname").autocomplete({ 
-		source: itemList,
-		select: function( event, ui ) {
-			itemid = ui.item.key;
-			$( "#itemname" ).val( ui.item.value );
- 			return false;
-		},
-		minLength: 3
-		});
-    });
-</script>
-<button id="rebuild" onclick="update();">Redraw Charts</button>
+<div id="wrapper">
+	<div id="controls">
+		<input type="text" id="itemname" name='itemname' />
+		<br/>
+		<select name="region1" id="region1" multiple="multiple" >
+			<option value=10000054>Aridia</option><option value=10000069>Black Rise</option><option value=10000055>Branch</option><option value=10000007>Cache</option><option value=10000014>Catch</option><option value=10000051>Cloud Ring</option><option value=10000053>Cobalt Edge</option><option value=10000012>Curse</option><option value=10000035>Deklein</option><option value=10000060>Delve</option><option value=10000001>Derelik</option><option value=10000005>Detorid</option><option value=10000036>Devoid</option><option value=10000043 selected>Domain</option><option value=10000039>Esoteria</option><option value=10000064>Essence</option><option value=10000027>Etherium Reach</option><option value=10000037>Everyshore</option><option value=10000046>Fade</option><option value=10000056>Feythabolis</option><option value=10000058>Fountain</option><option value=10000029>Geminate</option><option value=10000067>Genesis</option><option value=10000011>Great Wildlands</option><option value=10000030>Heimatar</option><option value=10000025>Immensea</option><option value=10000031>Impass</option><option value=10000009>Insmother</option><option value=10000052>Kador</option><option value=10000049>Khanid</option><option value=10000016>Lonetrek</option><option value=10000013>Malpais</option><option value=10000042>Metropolis</option><option value=10000028>Molden Heath</option><option value=10000040>Oasa</option><option value=10000062>Omist</option><option value=10000021>Outer Passage</option><option value=10000057>Outer Ring</option><option value=10000059>Paragon Soul</option><option value=10000063>Period Basis</option><option value=10000066>Perrigen Falls</option><option value=10000048>Placid</option><option value=10000047>Providence</option><option value=10000023>Pure Blind</option><option value=10000050>Querious</option><option value=10000008>Scalding Pass</option><option value=10000032>Sinq Laison</option><option value=10000044>Solitude</option><option value=10000022>Stain</option><option value=10000041>Syndicate</option><option value=10000045>Tenal</option><option value=10000061>Tenerifis</option><option value=10000038>The Bleak Lands</option><option value=10000033>The Citadel</option><option value=10000002 selected>The Forge</option><option value=10000034>The Kalevala Expanse</option><option value=10000018>The Spire</option><option value=10000010>Tribute</option><option value=10000003>Vale of the Silent</option><option value=10000015>Venal</option><option value=10000068>Verge Vendor</option><option value=10000006>Wicked Creek</option>
+		</select>
+		<br/>
+		<button id="rebuild" onclick="update();">Redraw Charts</button>
+	</div>
+	<div id="display">
+		<div id="container" style="min-width:310px; margin: 0 auto;"></div>
+	</div>
+</div>
 </body>
 </html>
